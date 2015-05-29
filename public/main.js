@@ -19,27 +19,27 @@ $(function() {
     socket.emit("add user", "admin");
 
     var intro_sound = new Howl({
-        urls: ['/audio/intro.ogg']
+        urls: ['/audio/intro_words.mp3']
     });
 
     var dontletme_sound = new Howl({
-        urls: ['/audio/dontletme.ogg']
+        urls: ['/audio/intro_1.mp3']
     });
 
     var definitelyin = new Howl({
-        urls: ['/audio/definitelyin.ogg']
+        urls: ['/audio/intro_2.mp3']
     });
 
     var gotta1 = new Howl({
-        urls: ['/audio/gotta1.wav']
+        urls: ['/audio/intro_3.mp3']
     });
 
     var gotta2 = new Howl({
-        urls: ['/audio/gotta2.wav']
+        urls: ['/audio/intro_.mp3']
     });
 
     var nanana = new Howl({
-        urls: ['/audio/nanana.wav']
+        urls: ['/audio/nanana.mp3']
     });
 
     var SOUNDS = [
