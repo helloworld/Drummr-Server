@@ -86,7 +86,7 @@ $(function() {
     }
 
     function stopButton(row, column) {
-        SOUNDS[row][column].fade(1.0, 0.0, 300, function(){
+        SOUNDS[row][column].fade(1.0, 0.0, 100, function(){
           SOUNDS[row][column].stop();
           SOUNDS[row][column].volume(1.0);
         });
