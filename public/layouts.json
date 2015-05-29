@@ -4,7 +4,7 @@
             [{
                 id: '00',
                 background: "peter_river_ripple",
-                sound: "dontletme"
+                sound: "intro"
             }, {
                 id: '01',
                 background: "belize_hole_ripple",
@@ -13,20 +13,20 @@
             [{
                 id: '10',
                 background: "amethyst_ripple",
-                sound: "dontletme"
+                sound: "definitelyin"
             }, {
                 id: '11',
                 background: "wisteria_ripple",
-                sound: "dontletme"
+                sound: "gotta1"
             }],
             [{
                 id: '20',
                 background: "carrot_ripple",
-                sound: "dontletme"
+                sound: "gottta2"
             }, {
                 id: '21',
                 background: "pumpkin_ripple",
-                sound: "dontletme"
+                sound: "nanana"
             }]
         ]
     }
