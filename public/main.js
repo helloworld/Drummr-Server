@@ -1,32 +1,13 @@
 $(function() {
 
-    var ready = false;
-    var delay = 0; // play one note every quarter second
-    var velocity = 127; // how hard the note hits
-
-    MIDI.loadPlugin({
-        soundfontUrl: "./soundfont/",
-        instrument: "acoustic_grand_piano",
-        onprogress: function(state, progress) {
-            console.log(state, progress);
-        },
-        onsuccess: function() {
-            var ready = true;
-            MIDI.setVolume(0, 127);
-            var note = 40;
-        }
-    });
-
-
     var FADE_TIME = 150;
     var COLORS = [
         ["#3498db", "#2980b9"],
         ["#9b59b6", "#8e44ad"],
         ["#e67e22", "#d35400"]
     ];
-
     var DEFAULT_COLOR = "#ecf0f1"
-    var DEFAULT_TEXT = "YEEZUS"
+    var DEFAULT_TEXT = "PLAY!"
 
     var $window = $(window);
     var $page = $(".page");
@@ -38,10 +19,69 @@ $(function() {
     socket.emit("add user", "admin");
 
 
+    var C_Piano = new Howl({
+        urls: ['/audio/piano/C4.mp3']
+    });
+
+    var D_Piano = new Howl({
+        urls: ['/audio/piano/D4.mp3']
+    });
+
+    var E_Piano = new Howl({
+        urls: ['/audio/piano/E4.mp3']
+    });
+
+    var F_Piano = new Howl({
+        urls: ['/audio/piano/F4.mp3']
+    });
+
+    var G_Piano = new Howl({
+        urls: ['/audio/piano/G4.mp3']
+    });
+
+    var A_Piano = new Howl({
+        urls: ['/audio/piano/A4.mp3']
+    });
+
+    var C1_Drums = new Howl({
+        urls: ['/audio/drums/C1.mp3']
+    });
+
+    var C2_Drums = new Howl({
+        urls: ['/audio/drums/C2.mp3']
+    });
+
+    var C3_Drums = new Howl({
+        urls: ['/audio/drums/C3.mp3']
+    });
+
+    var C4_Drums = new Howl({
+        urls: ['/audio/drums/C4.mp3']
+    });
+
+    var C5_Drums = new Howl({
+        urls: ['/audio/drums/C5.mp3']
+    });
+
+    var C6_Drums = new Howl({
+        urls: ['/audio/drums/C6.mp3']
+    });
+
+
+
     var SOUNDS = [
-        [60, 62],
-        [64, 65],
-        [67, 69]
+        [
+            [C_Piano, C1_Drums],
+            [D_Piano, C2_Drums]
+        ],
+        [
+            [E_Piano, C3_Drums],
+            [F_Piano, C4_Drums]
+        ],
+        [
+            [G_Piano, C5_Drums],
+            [A_Piano, C6_Drums]
+        ]
     ];
 
 
@@ -57,15 +97,15 @@ $(function() {
         [false, false],
     ]
 
-    function noneArePlaying(){
-      for(var i = 0; i < STATE.length; i++){
-        for(var j = 0; j < STATE[i].length; j++){
-          if(STATE[i][j] == true){
-            return false;
-          }
+    function noneArePlaying() {
+        for (var i = 0; i < STATE.length; i++) {
+            for (var j = 0; j < STATE[i].length; j++) {
+                if (STATE[i][j] == true) {
+                    return false;
+                }
+            }
         }
-      }
-      return true;
+        return true;
     }
 
     function getButtonDetails(button) {
@@ -74,19 +114,18 @@ $(function() {
         return [row, column];
     }
 
-    function playButton(row, column) {
+    function playButton(row, column, instrument) {
         $page.css('background-color', COLORS[row][column]);
         $intro.text(TEXT[row][column])
-        var note = SOUNDS[row][column];
-        MIDI.noteOn(0, note, velocity, delay);
+        SOUNDS[row][column][instrument].play();
         STATE[row][column] = true;
-
     }
 
-    function stopButton(row, column) {
-        var note = SOUNDS[row][column];
-        console.log(note)
-        MIDI.noteOff(0, note, delay);
+    function stopButton(row, column, instrument) {
+        SOUNDS[row][column][instrument].fade(1.0, 0.0, 100, function() {
+            SOUNDS[row][column][instrument].stop();
+            SOUNDS[row][column][instrument].volume(1.0);
+        });
         STATE[row][column] = false;
         if (noneArePlaying()) {
             $page.css('background-color', DEFAULT_COLOR);
@@ -96,20 +135,34 @@ $(function() {
 
 
     socket.on('button down', function(instrument, button) {
+        var index;
+
+        if(instrument == "piano"){
+            index = 0;
+        } else{
+            index = 1;
+        }
+
         var details = getButtonDetails(button);
         var row = details[0];
         var column = details[1];
-        playButton(row, column);
+        playButton(row, column, index);
     });
 
-    socket.on('button up', function(intrument, button) {
+    socket.on('button up', function(instrument, button) {
+        var index;
+
+        if(instrument == "piano"){
+            index = 0;
+        } else{
+            index = 1;
+        }
+
         var details = getButtonDetails(button);
         var row = details[0];
         var column = details[1];
-        stopButton(row, column);
+        stopButton(row, column, index);
     });
 
-    
-            
 
 });
