@@ -1,11 +1,30 @@
 $(function() {
 
+    var ready = false;
+    var delay = 0; // play one note every quarter second
+    var velocity = 127; // how hard the note hits
+
+    MIDI.loadPlugin({
+        soundfontUrl: "./soundfont/",
+        instrument: "acoustic_grand_piano",
+        onprogress: function(state, progress) {
+            console.log(state, progress);
+        },
+        onsuccess: function() {
+            var ready = true;
+            MIDI.setVolume(0, 127);
+            var note = 40;
+        }
+    });
+
+
     var FADE_TIME = 150;
     var COLORS = [
         ["#3498db", "#2980b9"],
         ["#9b59b6", "#8e44ad"],
         ["#e67e22", "#d35400"]
     ];
+
     var DEFAULT_COLOR = "#ecf0f1"
     var DEFAULT_TEXT = "YEEZUS"
 
@@ -18,41 +37,18 @@ $(function() {
     var socket = io();
     socket.emit("add user", "admin");
 
-    var intro_sound = new Howl({
-        urls: ['/audio/intro_words.mp3']
-    });
-
-    var dontletme_sound = new Howl({
-        urls: ['/audio/intro_1.mp3']
-    });
-
-    var definitelyin = new Howl({
-        urls: ['/audio/intro_2.mp3']
-    });
-
-    var gotta1 = new Howl({
-        urls: ['/audio/intro_3.mp3']
-    });
-
-    var gotta2 = new Howl({
-        urls: ['/audio/intro_.mp3']
-    });
-
-    var nanana = new Howl({
-        urls: ['/audio/nanana.mp3']
-    });
 
     var SOUNDS = [
-        [intro_sound, dontletme_sound],
-        [definitelyin, gotta1],
-        [gotta2, nanana]
+        [60, 62],
+        [64, 65],
+        [67, 69]
     ];
 
 
     var TEXT = [
-        ["UHH", "DONT LET ME"],
-        ["DEFINITELY IN", "GOTTA"],
-        ["GOTTA", "NA NA NA"]
+        ["C", "D"],
+        ["E", "F"],
+        ["G", "A"]
     ]
 
     var STATE = [
@@ -81,15 +77,16 @@ $(function() {
     function playButton(row, column) {
         $page.css('background-color', COLORS[row][column]);
         $intro.text(TEXT[row][column])
-        SOUNDS[row][column].play();
+        var note = SOUNDS[row][column];
+        MIDI.noteOn(0, note, velocity, delay);
         STATE[row][column] = true;
+
     }
 
     function stopButton(row, column) {
-        SOUNDS[row][column].fade(1.0, 0.0, 100, function(){
-          SOUNDS[row][column].stop();
-          SOUNDS[row][column].volume(1.0);
-        });
+        var note = SOUNDS[row][column];
+        console.log(note)
+        MIDI.noteOff(0, note, delay);
         STATE[row][column] = false;
         if (noneArePlaying()) {
             $page.css('background-color', DEFAULT_COLOR);
@@ -98,19 +95,21 @@ $(function() {
     }
 
 
-    socket.on('button down', function(button) {
+    socket.on('button down', function(instrument, button) {
         var details = getButtonDetails(button);
         var row = details[0];
         var column = details[1];
         playButton(row, column);
     });
 
-    socket.on('button up', function(button) {
+    socket.on('button up', function(intrument, button) {
         var details = getButtonDetails(button);
         var row = details[0];
         var column = details[1];
         stopButton(row, column);
     });
 
+    
+            
 
 });

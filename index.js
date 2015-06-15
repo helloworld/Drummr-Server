@@ -40,15 +40,17 @@ io.on('connection', function(socket) {
 
     });
 
-    socket.on("button down", function(button){
+    socket.on("button down", function(instrument, button){
+        console.log(instrument, button)
       if(admin){
-        admin.emit("button down", button);
+        admin.emit("button down",instrument, button);
       }
     })
 
-    socket.on("button up", function(button){
+    socket.on("button up", function(instrument, button){
+        console.log(instrument, button)
       if(admin){
-        admin.emit("button up", button);
+        admin.emit("button up", instrument, button);
       }
     })
 
